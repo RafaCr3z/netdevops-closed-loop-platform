@@ -1,0 +1,168 @@
+{
+  "name": "NetDevOps Closed-Loop Active Self-Healing Orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prtg-incident-webhook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "PRTG Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"body\"][\"sensor_status\"]}}",
+              "value2": "Down"
+            }
+          ]
+        }
+      },
+      "name": "Evaluate Sensor Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.NETBOX_URL}}/api/ipam/ip-addresses/?address={{$json[\"body\"][\"device_ip\"]}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Query NetBox SSoT Context",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://{{$env.FORTIGATE_HOST}}:{{$env.FORTIGATE_REST_PORT}}/api/v2/cmdb/vpn.ipsec/phase2-interface/{{$json[\"body\"][\"tunnel_name\"]}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"auto-negotiate\": \"enable\",\n  \"keepalive\": 10\n}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 5000
+        }
+      },
+      "name": "Primary FortiOS REST API CMDB Patch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        920,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "command": "=python3 scripts/fortios_remediation.py --incident-id {{$json[\"incident_id\"]}} --contingency"
+      },
+      "name": "Fallback Netmiko SSH Contingency Engine",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        920,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "collection": "remediation_audit_trail",
+        "operation": "insert",
+        "fields": "incident_id, status, duration_seconds, timestamp, details"
+      },
+      "name": "Audit Snapshot to MongoDB",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        280
+      ]
+    }
+  ],
+  "connections": {
+    "PRTG Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Sensor Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Sensor Status": {
+      "main": [
+        [
+          {
+            "node": "Query NetBox SSoT Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query NetBox SSoT Context": {
+      "main": [
+        [
+          {
+            "node": "Primary FortiOS REST API CMDB Patch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Primary FortiOS REST API CMDB Patch": {
+      "main": [
+        [
+          {
+            "node": "Audit Snapshot to MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fallback Netmiko SSH Contingency Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback Netmiko SSH Contingency Engine": {
+      "main": [
+        [
+          {
+            "node": "Audit Snapshot to MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
