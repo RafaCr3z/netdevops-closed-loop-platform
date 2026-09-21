@@ -93,7 +93,25 @@ A full suite of **24 Chaos Engineering scenarios** was executed to validate syst
 
 ## 📊 SRE Observability & Forensic Audit Trail
 
-Every remediation event generates an immutable record stored in **MongoDB**, providing a verifiable audit trail for post-mortems and compliance:
+Audit records stored in **MongoDB** are visualized in real-time through **Metabase dashboards** to evaluate self-healing efficiency and provide forensic auditability for compliance.
+
+### 📈 Sample Validation Run (Metabase Telemetry)
+
+> **Execution Sample:** Telemetry distribution captured during an experimental Chaos Engineering test run (13 sample injections):
+
+<p align="center">
+  <img src="docs/metabase_sample.png" width="70%" alt="Metabase Incident Distribution" style="background:#ffffff; border-radius: 8px; padding: 10px;" />
+</p>
+
+* **🔄 Autonomous Recovery (53.8%):** Transient configuration drifts, IKE Phase 2 renegotiations, and zombie tunnels recovered autonomously via the hybrid execution engine.
+* **📞 Carrier Escalation (30.8%):** Physical WAN / MPLS transport drops deterministically routed to telecom provider ticketing without unnecessary configuration writes.
+* **⚡ Hardware / Power Failures (15.4%):** Suppressed preemptively by differential ICMP pre-checks to protect appliance state.
+
+---
+
+### 🗄️ Immutable MongoDB Audit Record Example
+
+Every remediation event generates an immutable structured record with millisecond-precision timing:
 
 ```json
 {
