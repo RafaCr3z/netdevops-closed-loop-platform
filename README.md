@@ -42,21 +42,20 @@
 
 ---
 
-## 🏛️ Network Topology & Testbed Segmentation
+## 🏛️ Lab Network Topology & Segmentation
 
-The laboratory testbed is architectured with strict isolation between the **Data Plane (Underlay MPLS + Overlay IPsec)** and the **Out-of-Band (OOB) Automation Network**, ensuring zero coupling between operational traffic and control plane orchestration.
+The virtual environment was deployed on **VMware Workstation Pro** with strict **Out-of-Band (OOB) management segregation** to guarantee automation control plane availability:
 
 <p align="center">
-  <img src="docs/network_topology.svg" width="100%" alt="NetDevOps Laboratory Topology Diagram" />
+  <img src="docs/topology.png" width="90%" alt="Lab Topology & VMware Segmentation" style="border-radius: 8px;" />
 </p>
 
-### Architectural Separation
-1. **Data Plane (Underlay / Overlay):**
-   - **Carrier Underlay:** MPLS backbone connecting HUB Datacenter (`172.16.10.0/30`) to Branch Spoke (`172.16.20.0/30`) over BGP AS 65000.
-   - **Encrypted Overlay:** Site-to-Site IPsec VPN tunnel with Phase 1/2 AES-256 encryption securing inter-site traffic (`10.10.0.0/16` $\leftrightarrow$ `10.20.0.0/16`).
-2. **Out-of-Band (OOB) Automation Plane (`192.168.100.0/24` - VLAN 999):**
-   - Segregated management network hosting **PRTG Monitor**, **n8n Orchestrator**, **NetBox SSoT**, **MongoDB Audit Database**, and **Metabase Analytics**.
-   - Direct communication with FortiGate appliances via dedicated `mgmt` interfaces with strict *Trusted Hosts* IP filtering.
+### 🔌 Physical & Virtual Interface Mapping
+
+* **🛡️ Management Network (OOB):** Dedicated segment hosting PRTG and the n8n automation stack (`10.0.0.0/24` — Port2 on FortiGate HUB).
+* **🌐 Underlay MPLS Transport:** Point-to-point simulated leased line between HUB and SPOKE (`172.16.0.0/30` — Port3 on HUB `172.16.0.1` ↔ Port2 on SPOKE `172.16.0.2`).
+* **🔒 Overlay IPsec VPN:** Encrypted point-to-point tunnel (`10.10.10.0/30` — Port1 on HUB `10.10.10.1` ↔ Port3 on SPOKE `10.10.10.2`).
+* **🏬 SPOKE LAN:** Emulated branch office local network (`192.168.10.0/24` — Port1 on FortiGate SPOKE `192.168.10.1`).
 
 ---
 
