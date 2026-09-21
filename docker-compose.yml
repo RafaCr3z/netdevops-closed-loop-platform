@@ -1,6 +1,9 @@
 version: '3.8'
 
 services:
+  # ==============================================================================
+  # 1. MongoDB - Immutable Incident Audit Ledger & Telemetry Storage
+  # ==============================================================================
   mongodb:
     image: mongo:7.0
     container_name: netdevops_mongodb
@@ -8,28 +11,23 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-supersecurepassword}
+      MONGO_INITDB_DATABASE: netdevops_audit
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - netdevops_net
 
-  metabase:
-    image: metabase/metabase:v0.48.0
-    container_name: netdevops_metabase
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      MB_DB_TYPE: h2
-    volumes:
-      - metabase_data:/metabase-data
-    depends_on:
-      - mongodb
-    networks:
-      - netdevops_net
-
+  # ==============================================================================
+  # 2. n8n - Autonomic Closed-Loop Orchestrator & State Machine
+  # ==============================================================================
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: netdevops_n8n
@@ -44,20 +42,59 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      - GENERIC_TIMEZONE=Europe/Lisbon
+      - TZ=Europe/Lisbon
       - EXECUTIONS_DATA_PRUNE=true
       - EXECUTIONS_DATA_MAX_AGE=336
+      - NODE_FUNCTION_ALLOW_EXTERNAL=true
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NETBOX_URL=${NETBOX_URL:-http://netbox:8000}
+      - FORTIGATE_HOST=${FORTIGATE_HOST:-192.168.1.99}
+      - FORTIGATE_REST_PORT=${FORTIGATE_REST_PORT:-8443}
+      - FORTIGATE_API_TOKEN=${FORTIGATE_API_TOKEN}
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./scripts:/home/node/scripts:ro
+      - ./n8n:/home/node/workflows:ro
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - netdevops_net
 
+  # ==============================================================================
+  # 3. Metabase - Real-Time MTTR Dashboards & SRE Analytics
+  # ==============================================================================
+  metabase:
+    image: metabase/metabase:v0.48.0
+    container_name: netdevops_metabase
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - MB_DB_TYPE=h2
+      - MB_DB_FILE=/metabase-data/metabase.db
+      - JAVA_TIMEZONE=Europe/Lisbon
+    volumes:
+      - metabase_data:/metabase-data
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - netdevops_net
+
+# ==============================================================================
+# Persistent Storage Volumes & Network Definitions
+# ==============================================================================
 volumes:
   mongo_data:
-  metabase_data:
+    name: netdevops_mongo_data
   n8n_data:
+    name: netdevops_n8n_data
+  metabase_data:
+    name: netdevops_metabase_data
 
 networks:
   netdevops_net:
+    name: netdevops_bridge_net
     driver: bridge
