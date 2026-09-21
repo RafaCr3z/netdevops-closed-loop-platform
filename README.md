@@ -14,7 +14,7 @@
 </p>
 
 > **Enterprise Hybrid Network Auto-Remediation (In collaboration with ARTE, I.P.)**  
-> Active self-healing orchestration for hybrid corporate networks (Underlay MPLS + Overlay IPsec FortiGate VPN), reducing incident response and recovery times from **15–30 minutes to deterministic 4–7 seconds**.
+> Active self-healing orchestration for hybrid corporate networks (Underlay MPLS + Overlay IPsec FortiGate VPN), reducing incident response and recovery times from **15–30 minutes to deterministic 40–70 seconds**.
 
 ---
 
