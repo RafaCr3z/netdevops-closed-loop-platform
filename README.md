@@ -21,7 +21,7 @@
 ## 🛠️ Tech Stack
 
 * **Orchestration & Workflow Engine:** `n8n` (State Machine with event-driven execution)
-* **Single Source of Truth (SSoT):** `NetBox` (IPAM / DCIM context reconciliation)
+* **Single Source of Truth (SSoT):** `NetBox` (IPAM / DCIM canonical state reconciliation)
 * **Target Network Hardware & API:** `Fortinet FortiGate (FortiOS 7.x REST API CMDB)`
 * **Contingency Execution:** `Python 3.11` + `Netmiko` (Out-of-band SSH engine under PEP 668 compliance)
 * **Monitoring & Triggers:** `PRTG Network Monitor` (Automated webhook payloads)
@@ -42,57 +42,41 @@
 
 ---
 
-## 🏛️ Architecture & Closed-Loop Workflow
+## 🏛️ Network Topology & Testbed Segmentation
 
-```text
-[ PRTG Webhook Alert ]
-       │
-       ▼
-[ n8n State Machine ] ◄── (ICMP Pre-Check: Underlay vs Overlay)
-       │
-       ├──► [ NetBox SSoT ] (Query expected IPAM / Config Context)
-       │
-       ▼
-[ Hybrid Execution Engine ]
-       ├── 1. Primary: FortiOS REST API (Synchronous CMDB Patch)
-       └── 2. Fallback: Python 3.11 / Netmiko via SSH (PEP 668)
-       │
-       ▼
-[ Observability & Telemetry ]
-       ├── Audit Trail & Incident Logs ➔ MongoDB
-       ├── KPI & MTTR Visualizations   ➔ Metabase Dashboards
-       └── Incident Notifications     ➔ Telegram / Alert Channels
-```
+The laboratory testbed is architectured with strict isolation between the **Data Plane (Underlay MPLS + Overlay IPsec)** and the **Out-of-Band (OOB) Automation Network**, ensuring zero coupling between operational traffic and control plane orchestration.
 
-### Sequence Flow (Mermaid)
+<p align="center">
+  <img src="docs/network_topology.svg" width="100%" alt="NetDevOps Laboratory Topology Diagram" />
+</p>
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Net as Network (MPLS / FortiGate)
-    participant Mon as PRTG Monitoring
-    participant Orch as n8n State Machine
-    participant SSoT as NetBox (SSoT)
-    participant API as FortiOS REST API
-    participant Fallback as Netmiko CLI Engine
-    participant DB as MongoDB Audit Trail
+### Architectural Separation
+1. **Data Plane (Underlay / Overlay):**
+   - **Carrier Underlay:** MPLS backbone connecting HUB Datacenter (`172.16.10.0/30`) to Branch Spoke (`172.16.20.0/30`) over BGP AS 65000.
+   - **Encrypted Overlay:** Site-to-Site IPsec VPN tunnel with Phase 1/2 AES-256 encryption securing inter-site traffic (`10.10.0.0/16` $\leftrightarrow$ `10.20.0.0/16`).
+2. **Out-of-Band (OOB) Automation Plane (`192.168.100.0/24` - VLAN 999):**
+   - Segregated management network hosting **PRTG Monitor**, **n8n Orchestrator**, **NetBox SSoT**, **MongoDB Audit Database**, and **Metabase Analytics**.
+   - Direct communication with FortiGate appliances via dedicated `mgmt` interfaces with strict *Trusted Hosts* IP filtering.
 
-    Net->>Mon: Anomaly / Tunnel Drop / Flapping
-    Mon->>Orch: HTTP Webhook Trigger (Node & Sensor ID)
-    Orch->>SSoT: Query Expected Target Configuration
-    SSoT-->>Orch: Canonical State & IPAM Schema
+---
 
-    alt Primary Path: Synchronous REST API
-        Orch->>API: PUT /api/v2/cmdb (Bearer Token Auth)
-        API-->>Orch: 200 OK (Config Applied)
-    else Fallback Path: Out-of-Band CLI Session
-        Orch->>Fallback: Trigger Netmiko Subprocess (PEP 668)
-        Fallback->>Net: SSH Configuration Execution
-        Fallback-->>Orch: Return Code 0
-    end
+## 🔄 Autonomic Closed-Loop State Machine (MAPE-K Model)
 
-    Orch->>DB: Write Timestamped Execution Snapshot & MTTR
-```
+The auto-remediation workflow implements the canonical **MAPE-K (Monitor, Analyze, Plan, Execute, Knowledge)** autonomic computing framework:
+
+<p align="center">
+  <img src="docs/closed_loop_flow.svg" width="100%" alt="Autonomic Closed-Loop State Machine Flowchart" />
+</p>
+
+### Execution Lifecycle
+
+1. **Monitor (M):** PRTG polls target interfaces and tunnel sensors. Upon detecting state degradation, it fires an asynchronous HTTP Webhook containing node telemetry and sensor identifiers.
+2. **Analyze (A):** The n8n state machine performs differential ICMP diagnostic checks (Underlay carrier ping vs Overlay VPN ping) to isolate whether the root cause is physical/transport or cryptographic/tunnel SA drop.
+3. **Plan (P):** The engine queries NetBox via REST API to fetch the canonical desired configuration context (IPAM allocations, MTU thresholds, cryptographic profiles) to prevent unauthorized configuration drift.
+4. **Execute (E) [Hybrid Engine]:**
+   - **Primary Execution:** Synchronous HTTP `PUT` request to `/api/v2/cmdb` on FortiOS REST API with Bearer token authentication.
+   - **Contingency Fallback:** If the REST API encounters timeouts, rate limits (HTTP 429), or management port blocking, the engine immediately spawns the out-of-band Python Netmiko CLI engine (isolated under PEP 668) to push configuration via SSH.
+5. **Knowledge & Telemetry (K):** Synthetic post-remediation verification probe is triggered, an immutable audit event is persisted to MongoDB, MTTR is computed in Metabase, and an operational dispatch is routed to the SRE Telegram channel.
 
 ---
 
@@ -107,7 +91,29 @@ A full suite of **24 Chaos Engineering scenarios** was executed to validate syst
 | **API Failure** | Firewall drop on REST port 8443 | Automatic trigger of Netmiko CLI | ~15 min | **6.9 s** | `-99.2%` |
 | **SSoT Drift** | Unauthorized VLAN / IP drift | Force reconcile from NetBox SSoT | ~30 min | **5.1 s** | `-99.7%` |
 
-👉 *Full scenario catalog available in [docs/chaos_scenarios.md](docs/chaos_scenarios.md).*
+👉 *Full scenario catalog and execution reports available in [docs/chaos_scenarios.md](docs/chaos_scenarios.md).*
+
+---
+
+## 📊 SRE Observability & Forensic Audit Trail
+
+Every remediation event generates an immutable record stored in **MongoDB**, providing a verifiable audit trail for post-mortems and compliance:
+
+```json
+{
+  "incident_id": "INC-CHAOS-001",
+  "action": "REMEDIATION_REST_API",
+  "status": "RESOLVED",
+  "duration_seconds": 4.12,
+  "timestamp": "2026-09-21T17:13:38.120Z",
+  "details": {
+    "method_used": "REST_API",
+    "api_endpoint": "vpn.ipsec/phase2-interface/tunnel_to_spoke",
+    "contingency_invoked": false,
+    "netbox_ssot_reconciled": true
+  }
+}
+```
 
 ---
 
@@ -178,7 +184,10 @@ netdevops-closed-loop-platform/
 │   └── chaos_injector.py          # 24-scenario Chaos Engineering runner
 │
 └── docs/                          # Architecture & test reports
-    └── chaos_scenarios.md         # Detailed scenario matrix & benchmarks
+    ├── network_topology.svg       # Laboratory testbed topology diagram
+    ├── closed_loop_flow.svg       # Autonomic MAPE-K state machine diagram
+    ├── chaos_scenarios.md         # Detailed scenario matrix & benchmarks
+    └── chaos_audit_report.json    # Machine-readable test execution report
 ```
 
 ---
