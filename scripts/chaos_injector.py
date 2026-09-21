@@ -88,7 +88,7 @@ def run_chaos_test_suite():
         total_auto_time += actual_time
 
         delta_percent = ((item.manual_mttr_min * 60 - actual_time) / (item.manual_mttr_min * 60)) * 100
-        print(f"  ✅ Recovered in {actual_time:.2f}s (Manual baseline: {item.manual_mttr_min}m) | MTTR Delta: -{delta_percent:.2f}%")
+        print(f"  [OK] Recovered in {actual_time:.2f}s (Manual baseline: {item.manual_mttr_min}m) | MTTR Delta: -{delta_percent:.2f}%")
         results.append(asdict(item))
 
     print("\n" + "=" * 80)
@@ -102,9 +102,9 @@ def run_chaos_test_suite():
     print(f"  Total MTTR Reduction:      -{overall_reduction:.2f}%")
     print("=" * 80)
 
-    with open("docs/chaos_audit_report.json", "w") as f:
+    with open("docs/chaos_audit_report.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    print("  📄 Detailed audit report written to docs/chaos_audit_report.json\n")
+    print("  Report written to docs/chaos_audit_report.json\n")
 
 
 if __name__ == "__main__":

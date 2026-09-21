@@ -1,0 +1,242 @@
+[
+  {
+    "scenario_id": 1,
+    "category": "Overlay IPsec",
+    "name": "Phase 2 Tunnel Drop",
+    "injected_fault": "Abrupt SA tear-down",
+    "expected_remediation": "Re-initiate IKE Phase 2 SA via API",
+    "manual_mttr_min": 18.0,
+    "auto_mttr_sec": 4.2,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 2,
+    "category": "Overlay IPsec",
+    "name": "Phase 1 Rekey Mismatch",
+    "injected_fault": "Lifetime disparity in IKE proposal",
+    "expected_remediation": "Align lifetime params to NetBox SSoT",
+    "manual_mttr_min": 25.0,
+    "auto_mttr_sec": 4.8,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 3,
+    "category": "Overlay IPsec",
+    "name": "Dead Peer Detection Timeout",
+    "injected_fault": "Simulated packet drop on keepalive",
+    "expected_remediation": "Trigger DPD reset & route failover",
+    "manual_mttr_min": 15.0,
+    "auto_mttr_sec": 5.1,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 4,
+    "category": "Overlay IPsec",
+    "name": "Encryption Proposal Drift",
+    "injected_fault": "Desync cipher AES-256 to AES-128",
+    "expected_remediation": "Patch CMDB IPsec profile",
+    "manual_mttr_min": 30.0,
+    "auto_mttr_sec": 4.5,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 5,
+    "category": "Overlay IPsec",
+    "name": "Interface MTU Blackhole",
+    "injected_fault": "MTU clamped below MSS threshold",
+    "expected_remediation": "Restore 1420 MTU clamp standard",
+    "manual_mttr_min": 22.0,
+    "auto_mttr_sec": 4.3,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 6,
+    "category": "Overlay IPsec",
+    "name": "Secondary Tunnel Failover",
+    "injected_fault": "Primary IPsec gateway unreachable",
+    "expected_remediation": "Switch BGP metric to secondary tunnel",
+    "manual_mttr_min": 14.0,
+    "auto_mttr_sec": 5.4,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 7,
+    "category": "Underlay Routing",
+    "name": "BGP Peer Flapping",
+    "injected_fault": "Inject route flap damping penalty",
+    "expected_remediation": "Clear BGP neighbor & dampen dampening",
+    "manual_mttr_min": 20.0,
+    "auto_mttr_sec": 5.8,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 8,
+    "category": "Underlay Routing",
+    "name": "MPLS Label Swapping Drop",
+    "injected_fault": "Null-route on MPLS core egress",
+    "expected_remediation": "Reroute telemetry via IPsec overlay",
+    "manual_mttr_min": 35.0,
+    "auto_mttr_sec": 6.2,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 9,
+    "category": "Underlay Routing",
+    "name": "Default Route Blackhole",
+    "injected_fault": "Missing static 0.0.0.0/0 gateway",
+    "expected_remediation": "Inject default route via FortiOS API",
+    "manual_mttr_min": 15.0,
+    "auto_mttr_sec": 4.1,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 10,
+    "category": "Underlay Routing",
+    "name": "High Jitter / Latency Spike",
+    "injected_fault": "Latency injected > 250ms on MPLS",
+    "expected_remediation": "Dynamic SLA steering to VPN path",
+    "manual_mttr_min": 18.0,
+    "auto_mttr_sec": 5.0,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 11,
+    "category": "Underlay Routing",
+    "name": "OSPF Area 0 Adjacency Loss",
+    "injected_fault": "Hello timer mismatch simulation",
+    "expected_remediation": "Sync OSPF timers with NetBox",
+    "manual_mttr_min": 24.0,
+    "auto_mttr_sec": 4.9,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 12,
+    "category": "Underlay Routing",
+    "name": "WAN Interface CRC Flood",
+    "injected_fault": "Simulated physical interface error rate",
+    "expected_remediation": "Disable flapping port and failover",
+    "manual_mttr_min": 28.0,
+    "auto_mttr_sec": 6.5,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 13,
+    "category": "API & Contingency",
+    "name": "REST API HTTPS Block",
+    "injected_fault": "Firewall drop on REST port 8443",
+    "expected_remediation": "Trigger Netmiko SSH fallback CLI",
+    "manual_mttr_min": 15.0,
+    "auto_mttr_sec": 6.9,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 14,
+    "category": "API & Contingency",
+    "name": "REST Token Expiration",
+    "injected_fault": "Inject invalid Bearer token (401)",
+    "expected_remediation": "Renew token & retry fallback",
+    "manual_mttr_min": 12.0,
+    "auto_mttr_sec": 6.4,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 15,
+    "category": "API & Contingency",
+    "name": "CMDB Lock Contention",
+    "injected_fault": "Simultaneous write collision (423)",
+    "expected_remediation": "Exponential backoff retry patch",
+    "manual_mttr_min": 10.0,
+    "auto_mttr_sec": 5.2,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 16,
+    "category": "API & Contingency",
+    "name": "SSL Certificate Verification Fail",
+    "injected_fault": "Inject expired cert authority",
+    "expected_remediation": "Switch to trusted SSH channel",
+    "manual_mttr_min": 20.0,
+    "auto_mttr_sec": 6.7,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 17,
+    "category": "API & Contingency",
+    "name": "Rate Limiting Throttle (429)",
+    "injected_fault": "Flood API to trigger rate-limiting",
+    "expected_remediation": "Throttle rate & queue remediation",
+    "manual_mttr_min": 15.0,
+    "auto_mttr_sec": 5.9,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 18,
+    "category": "API & Contingency",
+    "name": "Management VDOM Memory Spike",
+    "injected_fault": "VDOM resource allocation > 90%",
+    "expected_remediation": "Purge stale diagnostic sessions",
+    "manual_mttr_min": 30.0,
+    "auto_mttr_sec": 7.1,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 19,
+    "category": "SSoT State Drift",
+    "name": "IPAM Subnet Desynchronization",
+    "injected_fault": "Manual unauthorized IP change",
+    "expected_remediation": "Force reconcile from NetBox SSoT",
+    "manual_mttr_min": 30.0,
+    "auto_mttr_sec": 5.1,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 20,
+    "category": "SSoT State Drift",
+    "name": "VLAN Tagging Configuration Drift",
+    "injected_fault": "VLAN ID changed to 999",
+    "expected_remediation": "Restore canonical VLAN from NetBox",
+    "manual_mttr_min": 25.0,
+    "auto_mttr_sec": 4.6,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 21,
+    "category": "SSoT State Drift",
+    "name": "Firewall Policy Rule Desync",
+    "injected_fault": "Missing outbound security policy",
+    "expected_remediation": "Re-inject FortiOS firewall policy",
+    "manual_mttr_min": 40.0,
+    "auto_mttr_sec": 5.3,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 22,
+    "category": "SSoT State Drift",
+    "name": "SNMP / PRTG Community Drift",
+    "injected_fault": "Corrupted monitoring secret",
+    "expected_remediation": "Sync SNMP string with PRTG vault",
+    "manual_mttr_min": 20.0,
+    "auto_mttr_sec": 4.4,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 23,
+    "category": "SSoT State Drift",
+    "name": "DNS Forwarder Desync",
+    "injected_fault": "Invalid internal resolver configured",
+    "expected_remediation": "Restore corporate DNS resolvers",
+    "manual_mttr_min": 18.0,
+    "auto_mttr_sec": 4.2,
+    "status": "PASSED_RECOVERED"
+  },
+  {
+    "scenario_id": 24,
+    "category": "SSoT State Drift",
+    "name": "NTP Time Drift",
+    "injected_fault": "NTP server offset > 5000ms",
+    "expected_remediation": "Force NTP resync with ARTE time server",
+    "manual_mttr_min": 15.0,
+    "auto_mttr_sec": 4.0,
+    "status": "PASSED_RECOVERED"
+  }
+]
