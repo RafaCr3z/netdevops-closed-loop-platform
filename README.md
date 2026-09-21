@@ -59,23 +59,20 @@ The virtual environment was deployed on **VMware Workstation Pro** with strict *
 
 ---
 
-## 🔄 Autonomic Closed-Loop State Machine (MAPE-K Model)
+## 🔄 Autonomous Decision Logic & Closed-Loop Flow
 
-The auto-remediation workflow implements the canonical **MAPE-K (Monitor, Analyze, Plan, Execute, Knowledge)** autonomic computing framework:
+The orchestration engine implements a deterministic decision tree to isolate root causes and execute surgical remediations across 4 distinct failure domains:
 
 <p align="center">
-  <img src="docs/closed_loop_flow.svg" width="100%" alt="Autonomic Closed-Loop State Machine Flowchart" />
+  <img src="docs/closed_loop_flowchart.png" width="80%" alt="Closed Loop Decision Flow" style="border-radius: 8px;" />
 </p>
 
-### Execution Lifecycle
+### 🧠 Root-Cause Isolation & Remediation Stages
 
-1. **Monitor (M):** PRTG polls target interfaces and tunnel sensors. Upon detecting state degradation, it fires an asynchronous HTTP Webhook containing node telemetry and sensor identifiers.
-2. **Analyze (A):** The n8n state machine performs differential ICMP diagnostic checks (Underlay carrier ping vs Overlay VPN ping) to isolate whether the root cause is physical/transport or cryptographic/tunnel SA drop.
-3. **Plan (P):** The engine queries NetBox via REST API to fetch the canonical desired configuration context (IPAM allocations, MTU thresholds, cryptographic profiles) to prevent unauthorized configuration drift.
-4. **Execute (E) [Hybrid Engine]:**
-   - **Primary Execution:** Synchronous HTTP `PUT` request to `/api/v2/cmdb` on FortiOS REST API with Bearer token authentication.
-   - **Contingency Fallback:** If the REST API encounters timeouts, rate limits (HTTP 429), or management port blocking, the engine immediately spawns the out-of-band Python Netmiko CLI engine (isolated under PEP 668) to push configuration via SSH.
-5. **Knowledge & Telemetry (K):** Synthetic post-remediation verification probe is triggered, an immutable audit event is persisted to MongoDB, MTTR is computed in Metabase, and an operational dispatch is routed to the SRE Telegram channel.
+1. **Pre-Check Phase:** Validates the physical Underlay circuit (MPLS) to prevent false-positive configuration writes during carrier/hardware outages.
+2. **Deep Inspection:** Verifies Phase 2 Proxy-IDs and compares the active Remote Gateway against the NetBox Single Source of Truth (SSoT).
+3. **Traffic Heuristics:** Detects silent "zombie" tunnels by analyzing real-time ingress/egress byte counters.
+4. **Deterministic Remediation:** Triggers automated recovery via FortiOS REST API & Python/Netmiko (SSH), logging the full incident lifecycle to MongoDB.
 
 ---
 
