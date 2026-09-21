@@ -198,8 +198,9 @@ netdevops-closed-loop-platform/
 │   └── chaos_injector.py          # 24-scenario Chaos Engineering runner
 │
 └── docs/                          # Architecture & test reports
-    ├── network_topology.svg       # Laboratory testbed topology diagram
-    ├── closed_loop_flow.svg       # Autonomic MAPE-K state machine diagram
+    ├── topology.png               # Laboratory testbed topology diagram
+    ├── closed_loop_flowchart.png  # Autonomic closed-loop decision flowchart
+    ├── metabase_sample.png        # Metabase telemetry & incident distribution
     ├── chaos_scenarios.md         # Detailed scenario matrix & benchmarks
     └── chaos_audit_report.json    # Machine-readable test execution report
 ```
