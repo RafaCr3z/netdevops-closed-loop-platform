@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint-and-validate:
-    name: Code Quality & Linting
+    name: Code Quality, Linting & Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Codebase
@@ -20,7 +20,7 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      - name: Install Linting & Testing Dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flake8 black pytest
@@ -28,15 +28,19 @@ jobs:
 
       - name: Run Black Code Formatter Check
         run: |
-          black --check scripts/
+          black --check scripts/ tests/
 
       - name: Run Flake8 Static Analysis
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 scripts/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings
-          flake8 scripts/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 scripts/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Validate JSON Workflows
         run: |
           python -m json.tool n8n/closed_loop_orchestration.json > /dev/null
+
+      - name: Run Pytest Unit Tests with Mocks
+        run: |
+          pytest tests/ -v --tb=short
