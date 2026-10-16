@@ -76,9 +76,22 @@ The orchestration engine implements a deterministic decision tree to isolate roo
 
 ---
 
-## 🔬 Chaos Engineering Matrix & MTTR Benchmarks
+---
 
-A full suite of **24 Chaos Engineering scenarios** was executed to validate system determinism under adverse network conditions:
+## 🔬 Reliability Engineering: Empirical Lab Validation vs. Extended Chaos Suite
+
+The closed-loop self-healing architecture was validated across two complementary evaluation tiers:
+
+1. **🧪 Live Empirical Lab Validation (Real Testbed):**  
+   Conducted in a dedicated **VMware Workstation Pro** environment connecting virtual **FortiGate HUB & SPOKE (FortiOS v7.x)**, PRTG, n8n, and NetBox. Validated against real-world failures:
+   * **Remote Gateway & Phase 2 Drift:** Autonomous detection and convergence via SSH/Netmiko and native API.
+   * **Zombie Tunnel Detection:** Heuristic triage of silent drops via 0-byte throughput counters.
+   * **Branch Power Outage (Blackout):** Safe failure isolation via Pre-Check ICMP, suppressing false-positive configuration writes.
+   * **FortiOS REST API CMDB Convergence:** Real syslogs prove automated resolution from cryptographic negotiation failure to `tunnel-up` in **4.0 seconds** (15:47:55 → 15:47:59).  
+   👉 **Read the full methodology, syslogs, and photographic evidence in [docs/empirical_lab_validation.md](docs/empirical_lab_validation.md).**
+
+2. **📊 Extended 24-Scenario Chaos Taxonomy & Offline Demonstrator:**  
+   To model comprehensive failure modes without requiring a multi-VM hypervisor, an extended architectural taxonomy was modeled across 4 failure domains:
 
 | Domain | Injected Fault Example | Remediation Strategy | Manual Baseline | Auto MTTR | Delta |
 |:---|:---|:---|:---|:---|:---|
@@ -87,7 +100,8 @@ A full suite of **24 Chaos Engineering scenarios** was executed to validate syst
 | **API Failure** | Firewall drop on REST port 8443 | Automatic trigger of Netmiko CLI | ~15 min | **6.9 s** | `-99.2%` |
 | **SSoT Drift** | Unauthorized VLAN / IP drift | Force reconcile from NetBox SSoT | ~30 min | **5.1 s** | `-99.7%` |
 
-👉 *Full scenario catalog and execution reports available in [docs/chaos_scenarios.md](docs/chaos_scenarios.md).*
+> *Note on [`scripts/chaos_injector.py`](scripts/chaos_injector.py):* Serves as an offline synthetic benchmark demonstrator parameterized with the empirical timing baselines to populate local MongoDB and Metabase dashboards without active appliances.  
+> 👉 *Full 24-scenario specification catalog: [docs/chaos_scenarios.md](docs/chaos_scenarios.md).*
 
 ---
 

@@ -1,11 +1,16 @@
 """
-Chaos Engineering Fault Injection Suite
----------------------------------------
-Automated runner for 24 fault-injection scenarios across:
-1. Overlay IPsec VPN
-2. Underlay MPLS / BGP Routing
-3. FortiOS REST API Availability
-4. NetBox SSoT State Drift
+Synthetic Benchmark Generator & Offline Telemetry Demonstrator
+--------------------------------------------------------------
+Simulates an extended 24-scenario Chaos Engineering benchmark suite to generate
+synthetic audit telemetry for MongoDB persistence and Metabase dashboard demonstrations,
+without requiring a live VMware Workstation FortiGate cluster.
+
+* IMPORTANT ARCHITECTURAL NOTE *:
+This script is a demonstrator/simulator designed for offline testing and visualization.
+Actual empirical lab experiments on virtual FortiGates (Underlay/Overlay drift, zombie tunnels,
+power blackout suppression, and FortiOS REST API CMDB PATCH convergence in 4.0s) were
+executed in a multi-VM VMware environment and are documented with real syslogs in:
+`docs/empirical_lab_validation.md`.
 
 Author: Rafael Cruz
 Partner: ARTE, I.P.
@@ -255,7 +260,12 @@ CHAOS_SUITE_24 = [
 
 def run_chaos_test_suite():
     print("=" * 80)
-    print("  NETDEVOPS CLOSED-LOOP ACTIVE SELF-HEALING: CHAOS ENGINEERING AUDIT SUITE")
+    print(
+        "  NETDEVOPS CLOSED-LOOP ACTIVE SELF-HEALING: SYNTHETIC TELEMETRY DEMONSTRATOR"
+    )
+    print("  Mode: Offline Chaos Benchmark Simulation (24 Scenarios across 4 Domains)")
+    print("  Note: For live empirical lab validation & FortiOS syslogs, see:")
+    print("        docs/empirical_lab_validation.md")
     print(
         f"  Total Scenarios: {len(CHAOS_SUITE_24)} | Author: Rafael Cruz | Partner: ARTE, I.P."
     )
@@ -267,16 +277,16 @@ def run_chaos_test_suite():
 
     for item in CHAOS_SUITE_24:
         print(
-            f"\n[Injecting Scenario #{item.scenario_id:02d}] {item.category} -> {item.name}"
+            f"\n[Simulating Scenario #{item.scenario_id:02d}] {item.category} -> {item.name}"
         )
         print(f"  • Fault: {item.injected_fault}")
         print(f"  • Action: {item.expected_remediation}")
 
-        # Simulate test execution with minor jitter (+- 0.3s)
+        # Synthetic telemetry calculation modeled on empirical lab baselines (+- 0.25s jitter)
         actual_time = round(item.auto_mttr_sec + random.uniform(-0.25, 0.25), 2)
         time.sleep(0.05)  # fast simulation display
 
-        item.status = "PASSED_RECOVERED"
+        item.status = "SIMULATED_RECOVERED"
         total_manual_time += item.manual_mttr_min * 60
         total_auto_time += actual_time
 
@@ -284,15 +294,17 @@ def run_chaos_test_suite():
             (item.manual_mttr_min * 60 - actual_time) / (item.manual_mttr_min * 60)
         ) * 100
         print(
-            f"  [OK] Recovered in {actual_time:.2f}s (Manual baseline: {item.manual_mttr_min}m) | MTTR Delta: -{delta_percent:.2f}%"
+            f"  [OK] Simulated recovery in {actual_time:.2f}s (Manual baseline: {item.manual_mttr_min}m) | MTTR Delta: -{delta_percent:.2f}%"
         )
         results.append(asdict(item))
 
     print("\n" + "=" * 80)
-    print("  CHAOS AUDIT SUMMARY")
+    print("  SYNTHETIC BENCHMARK SUMMARY (TELEMETRY GENERATOR)")
     print("=" * 80)
-    print(f"  Total Scenarios Tested:    {len(CHAOS_SUITE_24)} / 24")
-    print(f"  Success Rate:              100.0%")
+    print(f"  Total Scenarios Simulated: {len(CHAOS_SUITE_24)} / 24")
+    print(
+        f"  Simulation Status:         Completed based on empirical lab timing baselines"
+    )
     print(
         f"  Avg Manual MTTR Baseline:  {total_manual_time / (len(CHAOS_SUITE_24) * 60):.1f} minutes"
     )
@@ -303,6 +315,10 @@ def run_chaos_test_suite():
         (total_manual_time - total_auto_time) / total_manual_time
     ) * 100
     print(f"  Total MTTR Reduction:      -{overall_reduction:.2f}%")
+    print("=" * 80)
+    print(
+        "  [i] Full empirical lab validation & FortiOS syslogs: docs/empirical_lab_validation.md"
+    )
     print("=" * 80)
 
     with open("docs/chaos_audit_report.json", "w", encoding="utf-8") as f:
