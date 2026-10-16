@@ -18,7 +18,11 @@ from datetime import datetime, timezone
 import requests
 import urllib3
 from dotenv import load_dotenv
-from netmiko import ConnectHandler, NetmikoTimeoutException, NetmikoAuthenticationException
+from netmiko import (
+    ConnectHandler,
+    NetmikoTimeoutException,
+    NetmikoAuthenticationException,
+)
 from pymongo import MongoClient
 
 # Disable insecure HTTPS warnings for self-signed FortiGate certificates in lab environments
@@ -30,7 +34,7 @@ load_dotenv()
 # Logging Configuration
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
+    format="%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s",
 )
 logger = logging.getLogger("NetDevOps-Remediation")
 
@@ -42,7 +46,9 @@ class FortiOSRemediationEngine:
         self.api_token = os.getenv("FORTIGATE_API_TOKEN", "")
         self.ssh_user = os.getenv("FORTIGATE_SSH_USER", "admin")
         self.ssh_password = os.getenv("FORTIGATE_SSH_PASSWORD", "")
-        self.mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/netdevops_audit")
+        self.mongo_uri = os.getenv(
+            "MONGO_URI", "mongodb://localhost:27017/netdevops_audit"
+        )
         self.db = self._init_db_connection()
 
     def _init_db_connection(self):
@@ -54,7 +60,14 @@ class FortiOSRemediationEngine:
             logger.warning(f"Failed to connect to MongoDB audit log: {e}")
             return None
 
-    def log_incident_audit(self, incident_id: str, action: str, status: str, duration_sec: float, details: dict):
+    def log_incident_audit(
+        self,
+        incident_id: str,
+        action: str,
+        status: str,
+        duration_sec: float,
+        details: dict,
+    ):
         """Records an immutable audit event for MTTR & compliance tracking."""
         record = {
             "incident_id": incident_id,
@@ -62,7 +75,7 @@ class FortiOSRemediationEngine:
             "status": status,
             "duration_seconds": round(duration_sec, 3),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "details": details
+            "details": details,
         }
         logger.info(f"Audit Record [MTTR: {duration_sec:.3f}s]: {status} - {action}")
         if self.db is not None:
@@ -72,14 +85,16 @@ class FortiOSRemediationEngine:
                 logger.error(f"MongoDB write failed: {e}")
         return record
 
-    def primary_api_remediation(self, endpoint_path: str, payload: dict) -> tuple[bool, str]:
+    def primary_api_remediation(
+        self, endpoint_path: str, payload: dict
+    ) -> tuple[bool, str]:
         """
         Executes synchronous PATCH / PUT request to FortiOS REST API CMDB.
         """
         url = f"https://{self.host}:{self.port}/api/v2/cmdb/{endpoint_path.lstrip('/')}"
         headers = {
             "Authorization": f"Bearer {self.api_token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         try:
@@ -89,14 +104,16 @@ class FortiOSRemediationEngine:
                 headers=headers,
                 data=json.dumps(payload),
                 verify=False,
-                timeout=5.0
+                timeout=5.0,
             )
 
             if response.status_code in [200, 204]:
                 logger.info("Primary REST API remediation succeeded (HTTP 200/204).")
                 return True, response.text
             else:
-                logger.warning(f"REST API returned non-success status: {response.status_code} - {response.text}")
+                logger.warning(
+                    f"REST API returned non-success status: {response.status_code} - {response.text}"
+                )
                 return False, f"HTTP_{response.status_code}"
 
         except requests.exceptions.RequestException as e:
@@ -114,7 +131,7 @@ class FortiOSRemediationEngine:
             "username": self.ssh_user,
             "password": self.ssh_password,
             "timeout": 10,
-            "session_log": None
+            "session_log": None,
         }
 
         try:
@@ -130,7 +147,13 @@ class FortiOSRemediationEngine:
             logger.critical(f"Unexpected error in fallback execution: {e}")
             return False, str(e)
 
-    def execute_remediation(self, incident_id: str, api_endpoint: str, api_payload: dict, fallback_cli: list[str]) -> dict:
+    def execute_remediation(
+        self,
+        incident_id: str,
+        api_endpoint: str,
+        api_payload: dict,
+        fallback_cli: list[str],
+    ) -> dict:
         """
         Orchestrates hybrid execution: Primary REST API -> Fallback Netmiko -> Audit Trail.
         """
@@ -142,7 +165,9 @@ class FortiOSRemediationEngine:
 
         # 2. Fallback Contingency if Primary Failed
         if not success:
-            logger.warning("Primary REST API failed. Triggering out-of-band Netmiko contingency engine...")
+            logger.warning(
+                "Primary REST API failed. Triggering out-of-band Netmiko contingency engine..."
+            )
             method_used = "NETMIKO_SSH_FALLBACK"
             success, response_msg = self.fallback_cli_remediation(fallback_cli)
 
@@ -158,8 +183,8 @@ class FortiOSRemediationEngine:
                 "method_used": method_used,
                 "api_endpoint": api_endpoint,
                 "response": response_msg,
-                "contingency_invoked": (method_used == "NETMIKO_SSH_FALLBACK")
-            }
+                "contingency_invoked": (method_used == "NETMIKO_SSH_FALLBACK"),
+            },
         )
 
         return audit_result
@@ -171,16 +196,13 @@ if __name__ == "__main__":
     # Mock Scenario: IPsec Phase 2 Tunnel Bounce & Interface Reset
     test_incident_id = f"INC-VPN-{int(time.time())}"
     test_endpoint = "vpn.ipsec/phase2-interface/tunnel_to_hq"
-    test_payload = {
-        "auto-negotiate": "enable",
-        "keepalive": 10
-    }
+    test_payload = {"auto-negotiate": "enable", "keepalive": 10}
     test_fallback_cmds = [
         "config vpn ipsec phase2-interface",
         "edit tunnel_to_hq",
         "set auto-negotiate enable",
         "set keepalive 10",
-        "end"
+        "end",
     ]
 
     print("\n--- Running Closed-Loop Remediation Engine ---")
@@ -188,6 +210,6 @@ if __name__ == "__main__":
         incident_id=test_incident_id,
         api_endpoint=test_endpoint,
         api_payload=test_payload,
-        fallback_cli=test_fallback_cmds
+        fallback_cli=test_fallback_cmds,
     )
     print(json.dumps(result, indent=2, default=str))

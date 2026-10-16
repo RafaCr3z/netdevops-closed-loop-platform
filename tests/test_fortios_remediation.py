@@ -33,7 +33,12 @@ class TestFortiOSRemediationEngine(unittest.TestCase):
             incident_id="INC-TEST-001",
             api_endpoint="vpn.ipsec/phase2-interface/tunnel_to_hq",
             api_payload={"auto-negotiate": "enable"},
-            fallback_cli=["config vpn ipsec phase2-interface", "edit tunnel_to_hq", "set auto-negotiate enable", "end"]
+            fallback_cli=[
+                "config vpn ipsec phase2-interface",
+                "edit tunnel_to_hq",
+                "set auto-negotiate enable",
+                "end",
+            ],
         )
 
         self.assertEqual(result["status"], "RESOLVED")
@@ -47,14 +52,21 @@ class TestFortiOSRemediationEngine(unittest.TestCase):
         """Scenario 2: Primary API times out -> Netmiko SSH Fallback succeeds."""
         mock_put.side_effect = Timeout("Connection to FortiOS timed out")
         mock_ssh_instance = MagicMock()
-        mock_ssh_instance.send_config_set.return_value = "Applied fallback CLI configuration."
+        mock_ssh_instance.send_config_set.return_value = (
+            "Applied fallback CLI configuration."
+        )
         mock_connect.return_value.__enter__.return_value = mock_ssh_instance
 
         result = self.engine.execute_remediation(
             incident_id="INC-TEST-002",
             api_endpoint="vpn.ipsec/phase2-interface/tunnel_to_hq",
             api_payload={"auto-negotiate": "enable"},
-            fallback_cli=["config vpn ipsec phase2-interface", "edit tunnel_to_hq", "set auto-negotiate enable", "end"]
+            fallback_cli=[
+                "config vpn ipsec phase2-interface",
+                "edit tunnel_to_hq",
+                "set auto-negotiate enable",
+                "end",
+            ],
         )
 
         self.assertEqual(result["status"], "RESOLVED")
@@ -73,7 +85,7 @@ class TestFortiOSRemediationEngine(unittest.TestCase):
             incident_id="INC-TEST-003",
             api_endpoint="vpn.ipsec/phase2-interface/tunnel_to_hq",
             api_payload={"auto-negotiate": "enable"},
-            fallback_cli=["dummy command"]
+            fallback_cli=["dummy command"],
         )
 
         self.assertEqual(result["status"], "FAILED")
