@@ -321,9 +321,9 @@ def run_chaos_test_suite():
     )
     print("=" * 80)
 
-    with open("docs/chaos_audit_report.json", "w", encoding="utf-8") as f:
+    with open("docs/chaos_simulation_report.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    print("  Report written to docs/chaos_audit_report.json\n")
+    print("  Report written to docs/chaos_simulation_report.json\n")
 
 
 if __name__ == "__main__":

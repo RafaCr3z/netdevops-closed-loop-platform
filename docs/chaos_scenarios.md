@@ -4,7 +4,7 @@
 > **Methodology & Evidence Notice:**  
 > - **Empirical Laboratory Validation:** Live network trials with physical/virtual fault injections (Remote Gateway Drift, Zombie Tunnels, Branch Power Blackout with Pre-Check ICMP, and native FortiOS REST API CMDB PATCH re-establishment in 4.0s) were conducted in a **VMware Workstation Pro** environment. Full methodology, real FortiOS syslogs, and photographic evidences are published in:  
 >   👉 [**`docs/empirical_lab_validation.md`**](empirical_lab_validation.md).
-> - **Extended 24-Scenario Taxonomy:** The matrix below specifies the comprehensive failure taxonomy designed for enterprise SRE resilience across 4 domains. The companion tool [`scripts/chaos_injector.py`](../scripts/chaos_injector.py) serves as an offline synthetic benchmark demonstrator to seed MongoDB telemetry and Metabase dashboards based on empirical baselines without requiring live appliances.
+> - **Extended 24-Scenario Taxonomy:** The matrix below specifies the comprehensive failure taxonomy designed for enterprise SRE resilience across 4 domains. The companion tool [`scripts/chaos_simulation_demo.py`](../scripts/chaos_simulation_demo.py) serves as an offline synthetic benchmark demonstrator to seed MongoDB telemetry and Metabase dashboards based on empirical baselines without requiring live appliances.
 
 ## 📋 Summary Taxonomy Matrix
 

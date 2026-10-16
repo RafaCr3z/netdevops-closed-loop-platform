@@ -11,7 +11,7 @@
 To ensure full technical transparency for senior engineers and evaluators, this project establishes a clear distinction between two testing tiers:
 
 1. **Empirical Lab Validation (Real Testbed):** Real fault injection, differential telemetry, and automated remediation executed on live virtual appliances (FortiOS, PRTG, n8n, NetBox, MongoDB) running inside a multi-segment **VMware Workstation Pro** environment. This document presents the methodology, real FortiOS syslogs, and photographic evidences from those live trials.
-2. **Synthetic Benchmark Suite (`scripts/chaos_injector.py`):** An offline demonstrator and telemetry generator designed to seed MongoDB and Metabase dashboards across an extended 24-scenario taxonomy, allowing prospective evaluators to inspect observability pipelines without spinning up resource-intensive hypervisor appliances.
+2. **Synthetic Benchmark Suite (`scripts/chaos_simulation_demo.py`):** An offline demonstrator and telemetry generator designed to seed MongoDB and Metabase dashboards across an extended 24-scenario taxonomy, allowing prospective evaluators to inspect observability pipelines without spinning up resource-intensive hypervisor appliances.
 
 ---
 
@@ -132,10 +132,10 @@ Upon acquiring official commercial licenses for the virtual FortiGates, terminal
 
 ---
 
-## 🧪 5. Role of `scripts/chaos_injector.py` (Synthetic Benchmark)
+## 🧪 5. Role of `scripts/chaos_simulation_demo.py` (Synthetic Benchmark)
 
-Because deploying and maintaining a 5-VM VMware cluster with commercial FortiOS licenses requires significant computing resources and proprietary licensing, the repository includes `scripts/chaos_injector.py` as an **offline benchmark generator**:
+Because deploying and maintaining a 5-VM VMware cluster with commercial FortiOS licenses requires significant computing resources and proprietary licensing, the repository includes `scripts/chaos_simulation_demo.py` as an **offline benchmark generator**:
 
 1. **Deterministic Extrapolation:** It models an extended matrix of 24 scenarios across 4 failure domains (Overlay, Underlay, API, SSoT), parameterized with the timing baselines recorded during the empirical lab trials.
-2. **Dashboard Demonstration:** It allows users, CI/CD pipelines, and evaluators to run `python scripts/chaos_injector.py` to populate local MongoDB instances and view populated Metabase dashboards without a live FortiGate network.
+2. **Dashboard Demonstration:** It allows users, CI/CD pipelines, and evaluators to run `python scripts/chaos_simulation_demo.py` to populate local MongoDB instances and view populated Metabase dashboards without a live FortiGate network.
 3. **Transparency Notice:** The script is explicitly documented and labeled as a **simulation demonstrator**. Real production validation resides in the live evidence, syslogs, and n8n execution workflows provided above.

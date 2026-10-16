@@ -13,8 +13,8 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" />
 </p>
 
-> **Enterprise Hybrid Network Auto-Remediation (In collaboration with ARTE, I.P.)**  
-> Active self-healing orchestration for hybrid corporate networks (Underlay MPLS + Overlay IPsec FortiGate VPN), reducing incident response and recovery times from **15–30 minutes to deterministic 40–70 seconds**.
+> **Enterprise Hybrid Network Auto-Remediation Prototype (In collaboration with ARTE, I.P.)**  
+> Active self-healing orchestration prototype for hybrid corporate networks (Underlay MPLS + Overlay IPsec FortiGate VPN), evaluated in a multi-VM laboratory testbed in collaboration with ARTE, I.P. Laboratory validation demonstrated active configuration remediation in **4–7 seconds** (via REST API / Netmiko SSH) and a complete automated incident lifecycle in **40–70 seconds** (from PRTG detection, Pre-Check, NetBox validation to audit logging and Telegram dispatch), reducing recovery time compared to traditional manual intervention baselines (typically 15–30 minutes).
 
 ---
 
@@ -25,7 +25,7 @@
 * **Target Network Hardware & API:** `Fortinet FortiGate (FortiOS 7.x REST API CMDB)`
 * **Contingency Execution:** `Python 3.11` + `Netmiko` (Out-of-band SSH engine under PEP 668 compliance)
 * **Monitoring & Triggers:** `PRTG Network Monitor` (Automated webhook payloads)
-* **Data Persistence & Audit:** `MongoDB` (Immutable event ledger & timing metrics)
+* **Data Persistence & Audit:** `MongoDB` (Structured audit logging with timestamps & timing metrics, aligned with ISO 27001 traceability principles)
 * **Analytics & Telemetry:** `Metabase` (Real-time MTTR visualization & SLA reporting)
 * **Infrastructure Packaging:** `Docker` & `Docker Compose`
 
@@ -37,8 +37,8 @@
 * 📖 **Single Source of Truth (SSoT):** Runtime network state validation and configuration drift prevention against NetBox IPAM/DCIM.
 * ⚡ **Synchronous Remediation:** Direct CMDB patch operations via FortiOS REST API secured with token-based authentication and trusted host restrictions.
 * 🛡️ **Out-of-Band Fallback Engine:** Resilient CLI contingency engine written in Python (Netmiko) running in isolated virtual environments under PEP 668 to bypass API write-license constraints.
-* 🧪 **Chaos Engineering Audits:** 24 fault-injection scenarios systematically tested (link drops, BGP flaps, API timeouts), achieving 100% automated recovery.
-* 📊 **Telemetry & Audit Trail:** Real-time MTTR calculations in Metabase with immutable incident logs stored in MongoDB.
+* 🧪 **Laboratory Validation & Chaos Suite:** 5 empirical lab scenarios validated on virtualized FortiOS in VMware Workstation (detailed with syslogs in [`docs/empirical_lab_validation.md`](docs/empirical_lab_validation.md)), complemented by an extended 24-scenario offline chaos simulation demonstrator (`scripts/chaos_simulation_demo.py`).
+* 📊 **Telemetry & Audit Trail:** Real-time MTTR calculations in Metabase with structured incident logs stored in MongoDB.
 
 ---
 
@@ -182,9 +182,9 @@ Every remediation event generates an immutable structured record with millisecon
    pip install -r scripts/requirements.txt
    ```
 
-5. **Execute Chaos Engineering Simulation:**
+5. **Execute Demonstrative Chaos Telemetry Simulation:**
    ```bash
-   python scripts/chaos_injector.py
+   python scripts/chaos_simulation_demo.py
    ```
 
 ---
@@ -196,27 +196,32 @@ netdevops-closed-loop-platform/
 │
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # CI Pipeline: Flake8, Black, Syntax Validation
-├── docker-compose.yml             # Containerized Stack (MongoDB, Metabase, n8n)
-├── .env.example                   # Environment configuration template
-├── .gitignore                     # Git ignore rules
-├── LICENSE                        # MIT License
-├── README.md                      # Project documentation
+│       └── ci.yml                     # CI Pipeline: Flake8, Black, Unit Tests with Mocks
+├── docker-compose.yml                 # Containerized Stack (MongoDB, Metabase, n8n)
+├── .env.example                       # Environment configuration template
+├── .gitignore                         # Git ignore rules
+├── LICENSE                            # MIT License
+├── README.md                          # Project documentation
 │
-├── n8n/                           # Orchestration state machine exports
+├── n8n/                               # Orchestration state machine exports
 │   └── closed_loop_orchestration.json
 │
-├── scripts/                       # PEP 668 compliant automation scripts
-│   ├── requirements.txt           # Python dependencies
-│   ├── fortios_remediation.py     # Primary REST + Fallback Netmiko engine
-│   └── chaos_injector.py          # 24-scenario Chaos Engineering runner
+├── scripts/                           # PEP 668 compliant automation scripts
+│   ├── requirements.txt               # Python dependencies
+│   ├── fortios_remediation.py         # Primary REST + Fallback Netmiko engine
+│   └── chaos_simulation_demo.py       # 24-scenario synthetic benchmark generator
 │
-└── docs/                          # Architecture & test reports
-    ├── topology.png               # Laboratory testbed topology diagram
-    ├── closed_loop_flowchart.png  # Autonomic closed-loop decision flowchart
-    ├── metabase_sample.png        # Metabase telemetry & incident distribution
-    ├── chaos_scenarios.md         # Detailed scenario matrix & benchmarks
-    └── chaos_audit_report.json    # Machine-readable test execution report
+├── tests/                             # Automated unit tests with mocks
+│   └── test_fortios_remediation.py    # Unit tests for remediation engine
+│
+└── docs/                              # Architecture, empirical evidence & test reports
+    ├── empirical_lab_validation.md    # Real VMware lab methodology & FortiOS syslogs
+    ├── evidence/                      # Real lab screenshots, syslogs & execution traces
+    ├── topology.png                   # Laboratory testbed topology diagram
+    ├── closed_loop_flowchart.png      # Autonomic closed-loop decision flowchart
+    ├── metabase_sample.png            # Metabase telemetry & incident distribution
+    ├── chaos_scenarios.md             # Detailed 24-scenario taxonomy matrix
+    └── chaos_simulation_report.json   # Generated synthetic telemetry report
 ```
 
 ---
