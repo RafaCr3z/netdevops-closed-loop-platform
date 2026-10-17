@@ -228,10 +228,13 @@ netdevops-closed-loop-platform/
 
 ## 👥 Authors & Acknowledgments
 
-* **Rafael Cruz** — [LinkedIn](https://linkedin.com/in/rafael-cruz-7159092b2) | [GitHub](https://github.com/RafaCr3z)
-* **Rafael Victorino** — Project Co-Author / Engineering Collaborator
-* **Institutional Partner:** ARTE, I.P. (*Agência para a Reforma Tecnológica do Estado*)
-* **Academic Supervisors:** Prof. Doutor Vasco Soares & Prof. Doutor Alexandre Fonte (*Instituto Politécnico de Castelo Branco - IPCB*)
+* **Engineering Team (Project Authors):**
+  * **Rafael Cruz** — [LinkedIn](https://linkedin.com/in/rafael-cruz-7159092b2) | [GitHub](https://github.com/RafaCr3z)
+  * **Rafael Victorino** — Project Teammate / Co-Author
+* **Industry Mentorship & Guidance:**
+  * **Nuno Batuca** — Communications & Networks Team, **ARTE, I.P.** (*Agência para a Reforma Tecnológica do Estado*)
+* **Academic Supervisors:**
+  * **Prof. Doutor Vasco Soares** & **Prof. Doutor Alexandre Fonte** (*Instituto Politécnico de Castelo Branco - EST/IPCB*)
 
 ---
 <p align="center">

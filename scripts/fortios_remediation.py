@@ -6,6 +6,7 @@ Fallback: Python Netmiko CLI/SSH Contingency Engine (PEP 668 Compliant)
 Audit Trail: MongoDB Immutability & Event Timings
 
 Authors: Rafael Cruz & Rafael Victorino
+Mentorship: Nuno Batuca (ARTE, I.P. Communications Team)
 Partner: ARTE, I.P.
 """
 

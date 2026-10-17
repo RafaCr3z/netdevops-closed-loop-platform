@@ -1,8 +1,9 @@
 # 🧪 Empirical Lab Validation & Evidence Report
 
 > **Academic Project Context:** Capstone Engineering Project developed in formal partnership with **ARTE — Agência para a Reforma Tecnológica do Estado** (Final Grade: **19 / 20**).  
-> **Authors:** Rafael Cruz & Rafael Victorino  
-> **Institution:** Instituto Politécnico de Castelo Branco (EST/IPCB)
+> **Authors:** Rafael Cruz & Rafael Victorino (Engineering Teammates)  
+> **Industry Mentor:** Nuno Batuca (Equipa de Comunicações, ARTE, I.P.)  
+> **Academic Supervisors:** Prof. Doutor Vasco Soares & Prof. Doutor Alexandre Fonte (EST/IPCB)
 
 ---
 

@@ -13,6 +13,7 @@ executed in a multi-VM VMware environment and are documented with real syslogs i
 `docs/empirical_lab_validation.md`.
 
 Authors: Rafael Cruz & Rafael Victorino
+Mentorship: Nuno Batuca (ARTE, I.P. Communications Team)
 Partner: ARTE, I.P.
 """
 
