@@ -5,7 +5,7 @@ Primary: Synchronous FortiOS CMDB REST API Patch
 Fallback: Python Netmiko CLI/SSH Contingency Engine (PEP 668 Compliant)
 Audit Trail: MongoDB Immutability & Event Timings
 
-Author: Rafael Cruz
+Authors: Rafael Cruz & Rafael Victorino
 Partner: ARTE, I.P.
 """
 

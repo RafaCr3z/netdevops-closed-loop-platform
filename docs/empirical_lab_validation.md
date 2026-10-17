@@ -1,7 +1,7 @@
 # 🧪 Empirical Lab Validation & Evidence Report
 
 > **Academic Project Context:** Capstone Engineering Project developed in formal partnership with **ARTE — Agência para a Reforma Tecnológica do Estado** (Final Grade: **19 / 20**).  
-> **Author:** Rafael Cruz  
+> **Authors:** Rafael Cruz & Rafael Victorino  
 > **Institution:** Instituto Politécnico de Castelo Branco (EST/IPCB)
 
 ---

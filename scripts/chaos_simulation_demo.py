@@ -12,7 +12,7 @@ power blackout suppression, and FortiOS REST API CMDB PATCH convergence in 4.0s)
 executed in a multi-VM VMware environment and are documented with real syslogs in:
 `docs/empirical_lab_validation.md`.
 
-Author: Rafael Cruz
+Authors: Rafael Cruz & Rafael Victorino
 Partner: ARTE, I.P.
 """
 
