@@ -14,7 +14,8 @@
 </p>
 
 > **Automação e Inteligência em Redes de Comunicação de Dados: integração da metodologia Network DevOps (NetDevOps), numa arquitetura de redes híbrida (Projeto I & Projeto II · Nota Final: 19 / 20)**  
-> Event-driven closed-loop network automation prototype developed in collaboration with **ARTE, I.P.** (*Agência para a Reforma Tecnológica do Estado, I.P.* — Decreto-Lei n.º 96/2025, ex-AMA) for hybrid Hub-and-Spoke WANs (**Overlay IPsec IKEv2 VPN over Underlay MPLS**). Evaluated across **10 Chaos Engineering scenarios (A–J)** and **24 recorded laboratory incidents** (`13` in Phase 1 `incident_runs` + `11` in Phase 2 `incident_runs_enterprise`), demonstrating **MTTD < 10s** (>95% reduction in Projeto I; **< 1s** via webhooks in Projeto II Phase 2) and **4–7 seconds active remediation & tunnel convergence** documented in FortiOS v7.6.4 syslogs (compared to 15–30 minutes manual troubleshooting).
+> Event-driven closed-loop network automation prototype developed in collaboration with **ARTE, I.P.** (*Agência para a Reforma Tecnológica do Estado, I.P.* — Decreto-Lei n.º 96/2025, ex-AMA) for hybrid Hub-and-Spoke WANs (**Overlay IPsec IKEv2 VPN over Underlay MPLS**). Evaluated across **10 Chaos Engineering scenarios (A–J)** and **24 recorded laboratory incidents** (`13` in Phase 1 `incident_runs` + `11` in Phase 2 `incident_runs_enterprise`), demonstrating **MTTD < 10s** (>95% reduction in Projeto I; **< 1s** via webhooks in Projeto II Phase 2) and **4–7 seconds active remediation & tunnel convergence** documented in FortiOS v7.6.4 syslogs (compared to 15–30 minutes manual troubleshooting).  
+> 📄 **Official Academic Reports (Full PDFs):** [**Projeto 1 — Fev 2026 (61 pp.)**](docs/reports/Relatorio_Projeto_1_NetDevOps_ARTE_Fev2026.pdf) &nbsp;|&nbsp; [**Projeto 2 — Jun 2026 (110 pp.)**](docs/reports/Relatorio_Projeto_2_NetDevOps_ARTE_Jun2026.pdf)
 
 ---
 
@@ -199,6 +200,9 @@ netdevops-closed-loop-platform/
 │   └── test_fortios_remediation.py    # Unit tests for remediation engine
 │
 └── docs/                              # Architecture, empirical evidence & test reports
+    ├── reports/                       # Official academic capstone reports (PDF)
+    │   ├── Relatorio_Projeto_1_NetDevOps_ARTE_Fev2026.pdf
+    │   └── Relatorio_Projeto_2_NetDevOps_ARTE_Jun2026.pdf
     ├── empirical_lab_validation.md    # Real VMware lab methodology (10 scenarios A-J & 24 incidents)
     ├── evidence/                      # Real lab screenshots, syslogs & execution traces
     ├── topology.png                   # Laboratory testbed topology diagram

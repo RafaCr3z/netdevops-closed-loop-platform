@@ -5,7 +5,8 @@
 > **Partner Institution:** **ARTE, I.P. — Agência para a Reforma Tecnológica do Estado, I.P.** (Decreto-Lei n.º 96/2025, ex-AMA)  
 > **Industry Mentorship:** Eng.º Nuno Batuca (Equipa de Comunicações, ARTE, I.P.)  
 > **Academic Supervisors:** Prof. Doutor Vasco Nuno da Gama de Jesus Soares (Orientador) & Prof. Doutor Alexandre José Pereira Duro da Fonte (Coorientador) — *EST/IPCB*  
-> **Evaluation Jury:** Prof. Doutor Osvaldo Arede dos Santos (Presidente), Prof. Doutor Carlos Manuel de Oliveira Alves (Arguente), Prof. Doutor Vasco Nuno da Gama de Jesus Soares (Orientador)
+> **Evaluation Jury:** Prof. Doutor Osvaldo Arede dos Santos (Presidente), Prof. Doutor Carlos Manuel de Oliveira Alves (Arguente), Prof. Doutor Vasco Nuno da Gama de Jesus Soares (Orientador)  
+> 📄 **Full Official Reports (PDF):** [**Relatório Projeto 1 — Fev 2026 (61 pp.)**](reports/Relatorio_Projeto_1_NetDevOps_ARTE_Fev2026.pdf) &nbsp;|&nbsp; [**Relatório Projeto 2 — Jun 2026 (110 pp.)**](reports/Relatorio_Projeto_2_NetDevOps_ARTE_Jun2026.pdf)
 
 ---
 
